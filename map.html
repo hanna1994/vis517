@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <meta charset='utf-8' />
+  <title>NYC motor vehicle collisions</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+ #locations {
+      position: absolute;
+    }
+
+h1 {
+  font-size: 20px;
+  line-height: 30px;
+}
+
+h2 {
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: #2dc4b2;
+}
+ .mapboxgl-popup {
+   /* max-width: 190px;
+    max-height: 70px;*/
+   
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    opacity: 0.8;
+    color: #045a8d;
+   
+    position: absolute;
+  }
+
+#console {
+  position: absolute;
+  width: 240px;
+  height: 500px;
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: white;
+  opacity:0.8;
+}
+.session {
+  margin-bottom: 20px;
+}
+
+.row {
+  height: 12px;
+  width: 100%;
+}
+
+.colors {
+  background: linear-gradient(to right, #f1eef6, #d0d1e6, #a6bddb, #74a9cf, #2b8cbe, #045a8d);
+  margin-bottom: 5px;
+} 
+
+.label {
+  width: 15%;
+  display: inline-block;
+  text-align: center;
+}
+
+.button-refresh{
+ height:23px; width:15%; background:#045a8d; position:absolute; top:200px; left:210px; z-index:2;text-align: center;display: inline-block;border-radius: 8px;color: '#045a8d';
+}
+
+
+    </style>
+</head>
+
+<body>
+    <div id='map'></div>
+<div id='console'>
+  <h1>UFO Sightings</h1>
+  <p>Data: <a href='https://www.kaggle.com/NUFORC/ufo-sightings/data'>UFO sightings from 1949-2014</a> in U.S.</p>
+
+  <div class='session'>
+  <h2>number of report</h2>
+  <div class='row colors'>
+  </div>
+
+  <div class='row labels'>
+    <div class='label'>1</div>
+    <div class='label'></div>
+    <div class='label'></div>
+    <div class='label'></div>
+    <div class='label'></div>
+    <div class='label'>480+</div>
+
+</div>
+  </div>
+
+
+
+  <div class='session' id='sliderbar1'>
+  <h2>year: <label id='active-hour1'></label></h2>
+  <input id='slider1' class='row' type='range' min='1949' max='2014' step='1' value='0' />
+
+<div class='button-refresh' id='update'> <button style="color:white; background:#045a8d;height:23px; ">update</button> </div>
+</div>
+
+
+
+<div class='session' id='sliderbar2'>
+  <h2>month: <label id='active-hour2'></label></h2>
+  <input id='slider2' class='row' type='range' min='1' max='12' step='1' value='0' />
+</div>
+
+  <div class='session' id='sliderbar3'>
+  <h2>time: <label id='active-hour3'></label></h2>
+  <input id='slider3' class='row' type='range' min='0' max='23' step='1' value='0' />
+</div>
+
+ <h2>View different locations:</h2>
+  <div class='row' id='filters1'>
+    
+    <input id='Airports' type='radio' name='toggle' value='Airports' >
+    <label for='Airports'>Airports</label>
+     <div class='row' id='filters2'>
+    <input id='Millitarty' type='radio' name='toggle' value='Millitarty'>
+    <label for='Millitarty'>Millitarty</label>
+    <div class='row' id='filters3'>
+    <input id='research' type='radio' name='toggle' value='research'>
+    <label for='research'>research centers</label>
+  </div>
+
+ 
+</div>
+</div>
+</div>
+    <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaGFubmFoMTk5NCIsImEiOiJjamFmeTQ0eXgxOGdiMnFtaGhiZWFrNXh4In0.GM9MkRC4PwtphzaPO7wAyA'; // Put your Mapbox Public Access token here
+
+    // Load a new map in the 'map' HTML div
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/hannah1994/cjaudyts0l13a2sntm6chhzd2',
+      center: [-105.166694, 37.572087],
+      zoom: 3.6
+    });
+
+
+//Update the layer
+map.on('load', function() {
+  map.addLayer({
+    id: 'collisions',
+    type: 'circle',
+    source: {
+      type: 'vector',
+      url: 'mapbox://hannah1994.2wqtg8q5' // Your Mapbox tileset Map ID
+    },
+     'source-layer': 'w-b7srxu',// name of tilesets
+    paint: {
+       
+      'circle-radius':{
+        property: 'times',
+         type: 'exponential',
+        stops: [
+          [10, 1],
+          [400, 16]
+        ]
+
+      },
+
+      
+
+        'circle-color': {
+        property: 'times',
+        stops: [
+          [1, '#f1eef6'],
+          [10, '#d0d1e6'],
+          [80, '#a6bddb'],
+          [180, '#74a9cf'],
+          [280, '#2b8cbe'],
+          [480, '#045a8d']
+        ]
+      },
+       'circle-opacity': {
+
+ property: 'times',
+        stops: [
+          [1, 0.5],
+          [10, 0.6],
+          [50, 0.7],
+          [80, 0.8],
+          [120, 0.9],
+          [150, 1]
+        ]
+
+       }
+       // filter: ['==', 'year', 2010]
+       // 'circle-blur': 0.9,
+
+   },
+     //filter: ['==', 'year', 1949]
+    }); // place the layer beneath this layer in the basemap
+
+    document.getElementById('slider1').addEventListener('input', function(e) {
+      // get the current hour as a integer
+      var year = parseInt(e.target.value);
+      // map.setFilter(layer-name, filter)
+      map.setFilter('collisions', ['==', 'year', year]);
+
+      // update text in the UI
+      document.getElementById('active-hour1').innerText = year;
+   }); // place the layer beneath this layer in the basemap
+
+
+
+      document.getElementById('slider2').addEventListener('input', function(e) {
+      // get the current hour as a integer
+      var month = parseInt(e.target.value);
+      // map.setFilter(layer-name, filter)
+      var prd='';
+
+      map.setFilter('collisions', ['==', 'month', month]);
+switch(month){
+        case 1:prd='Jan';break;
+        case 2:prd='Feb';break;
+        case 3:prd='Mar';break;
+        case 4:prd='Apr';break;
+        case 5:prd='May';break;
+        case 6:prd='Jun';break;
+        case 7:prd='Jul';break;
+        case 8:prd='Aug';break;
+        case 9:prd='Sep';break;
+        case 10:prd='Oct';break;
+        case 11:prd='Nov';break;
+        case 12:prd='Dec';break;
+      }
+      // update text in the UI
+      document.getElementById('active-hour2').innerText = prd;
+   }); 
+
+
+  document.getElementById('slider3').addEventListener('input', function(e) {
+      // get the current hour as a integer
+      var hour = parseInt(e.target.value);
+      // map.setFilter(layer-name, filter)
+      var prd1='';
+
+      map.setFilter('collisions', ['==', 'hour', hour]);
+switch(hour){
+        case 0:prd1='12:00AM';break;
+        case 1:prd1='1:00AM';break;
+        case 2:prd1='2:00AM';break;
+        case 3:prd1='3:00AM';break;
+        case 4:prd1='4:00AM';break;
+        case 5:prd1='5:00AM';break;
+        case 6:prd1='6:00AM';break;
+        case 7:prd1='7:00AM';break;
+        case 8:prd1='8:00AM';break;
+        case 9:prd1='9:00AM';break;
+        case 10:prd1='10:00AM';break;
+        case 11:prd1='11:00AM';break;
+        case 12:prd1='12:00PM';break;
+        case 13:prd1='1:00PM';break;
+        case 14:prd1='2:00PM';break;
+        case 15:prd1='3:00PM';break;
+        case 16:prd1='4:00PM';break;
+        case 17:prd1='5:00PM';break;
+        case 18:prd1='6:00PM';break;
+        case 19:prd1='7:00PM';break;
+        case 20:prd1='8:00PM';break;
+        case 21:prd1='9:00PM';break;
+        case 22:prd1='10:00PM';break;
+        case 23:prd1='11:00PM';break;
+      }
+      // update text in the UI
+      document.getElementById('active-hour3').innerText = prd1;
+   }); 
+
+document.getElementById("update").onclick = function() {myFc()};
+function myFc() {
+    location.reload();
+}
+
+
+
+
+
+map.addControl(new mapboxgl.NavigationControl({ position: 'top-left' }));
+
+      map.on('click', function(e) {
+      var features = map.queryRenderedFeatures(e.point, {
+        layers: ['collisions']
+      });
+
+      if (!features.length) {
+        return;
+      }
+
+      var feature = features[0];
+
+      // Populate the popup and set its coordinates
+      // based on the feature found.
+      var popup = new mapboxgl.Popup()
+        .setLngLat(feature.geometry.coordinates)
+        .setHTML(
+
+          '<li class="list-group-item"> <strong>report time</strong>: ' + feature.properties['datetime'] + " </li>" +
+          '<li class="list-group-item"><strong> city</strong>: ' + feature.properties['city'] + " </li>" +
+          '<li class="list-group-item"> <strong>state</strong>: ' + feature.properties['state'] + " </li>" +
+          '<li class="list-group-item"> <strong>shape</strong>: ' + feature.properties['shape'] + " </li>" +
+          '<li class="list-group-item"> <strong>number of records</strong>: ' + feature.properties['times'] + " </li>" +
+          '</ul> </div>')
+        .addTo(map);
+    });
+
+   map.on('mousemove', function(e) {
+      var features = map.queryRenderedFeatures(e.point, {
+        layers: ['collisions']
+      });
+      map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+    });
+
+});
+
+
+
+    </script>
+</body>
+
+</html>
