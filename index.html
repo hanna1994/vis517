@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+ <!DOCTYPE html>
 <html>
 
 <head>
@@ -50,11 +51,19 @@ a {
    
     position: absolute;
   }
+   .marker {
+  background-image: url('https://github.com/hanna1994/vis517/blob/master/%E6%89%81%E5%B9%B3%E5%8C%96%E9%A3%9E%E6%9C%BA%E3%80%90%E4%B8%89%E5%85%83%E7%B4%A0%20%E4%B8%BA%E8%AE%BE%E8%AE%A1%E8%80%8C%E7%94%9F%203png.com%E3%80%91.png');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+}
 
 #console {
   position: absolute;
   width: 240px;
-  height: 500px;
+  height: 470px;
   margin: 10px;
   padding: 10px 20px;
   background-color: white;
@@ -135,15 +144,12 @@ a {
   <div class='row' id='filters1'>
     
     <input id='Airports' type='radio' name='toggle' value='Airports' >
-    <label for='Airports'>Airports</label>
-     <div class='row' id='filters2'>
-    <input id='Millitarty' type='radio' name='toggle' value='Millitarty'>
-    <label for='Millitarty'>Millitarty</label>
-    <div class='row' id='filters3'>
-    <input id='research' type='radio' name='toggle' value='research'>
-    <label for='research'>research centers</label>
+    <label for='Airports-l'>Airports</label>
+    
   </div>
+<script type="text/javascript">
 
+</script>
  
 </div>
 </div>
@@ -174,7 +180,7 @@ map.on('load', function() {
        
       'circle-radius':{
         property: 'times',
-         type: 'exponential',
+        type: 'exponential',
         stops: [
           [10, 1],
           [400, 16]
@@ -214,6 +220,155 @@ map.on('load', function() {
    },
      //filter: ['==', 'year', 1949]
     }); // place the layer beneath this layer in the basemap
+	var fclick=function(value){
+		alert(value);
+		switch(value){
+			case 'Airports':addPOI('Airports');break;
+		}
+	}
+	var showAirport=function(){
+		return;
+	}
+	document.getElementById('Airports').addEventListener('click', function(e) {;addPOI('Airports');});
+  	var addPOI = function(value){
+		// map.addSource(value,{
+  //     		type: 'vector',
+  //     		data: [33.636667,-84.428056,'Hartsfield–Jackson Atlanta International Airport']
+		// });
+	var geolist=[
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-84.428056,33.636667]
+                    },
+                    "properties": {
+                        "title": "Hartsfield–Jackson Atlanta International Airport",
+                        "icon": "monument"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-118.408056,33.9425]
+                    },
+                    "properties": {
+                        "title": "Los Angeles International Airport",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-87.904722,41.978611 ]
+                    },
+                    "properties": {
+                        "title": "O'Hare International Airport ",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-97.038056,32.896944 ]
+                    },
+                    "properties": {
+                        "title": "Dallas/Fort Worth International Airport",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [ -73.778889,40.639722 ]
+                    },
+                    "properties": {
+                        "title": "John F. Kennedy International Airport",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-104.673056,39.861667 ]
+                    },
+                    "properties": {
+                        "title": "Denver International Airport",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-122.375,37.618889 ]
+                    },
+                    "properties": {
+                        "title": "San Francisco International Airport",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-115.152222,36.08 ]
+                    },
+                    "properties": {
+                        "title": "McCarran International Airport",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [ -80.943056,35.213889 ]
+                    },
+                    "properties": {
+                        "title": "Charlotte Douglas International Airport ",
+                        "icon": "harbor"
+                    }
+                }, {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-122.309444,47.448889 ]
+                    },
+                    "properties": {
+                        "title": "Seattle–Tacoma International Airport ",
+                        "icon": "harbor"
+                    }
+                }];
+	map.addLayer({
+        "id": value,
+        "type": "symbol",
+        "source": {
+            "type": "geojson",
+            "data": {
+                "type": "FeatureCollection",
+                "features": geolist,
+            }
+        },
+        "layout": {
+            "icon-image": "{icon}-15",
+            "text-field": "{title}",
+            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+            "text-offset": [0, 0.6],
+            "text-anchor": "top"
+        }
+    });
+
+   geolist.forEach(function(marker) {
+
+  // create a HTML element for each feature
+  var el = document.createElement('div');
+  el.className = 'marker';
+
+  // make a marker for each feature and add to the map
+  new mapboxgl.Marker(el)
+  .setLngLat(marker.geometry.coordinates)
+  .addTo(map);
+});
+  	};
+
 
     document.getElementById('slider1').addEventListener('input', function(e) {
       // get the current hour as a integer
